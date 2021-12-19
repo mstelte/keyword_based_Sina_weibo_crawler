@@ -19,9 +19,9 @@ for date in dateList:
     thisDate = date
     datapath = "../WBTestdata/" + thisDate + "/"
     if os.path.exists(datapath):
-        print "got data"
+        print("got data")
     else:
-        print "Did not find this day´s data, next day!!"
+        print("Did not find this day´s data, next day!!")
         time.sleep(5)
         continue
 
@@ -31,9 +31,9 @@ for date in dateList:
             filename = f.decode("gbk").encode("UTF-8")
             thisfilepath = datapath + filename.decode("UTF-8")
             thisCountry = filename.split(thisDate)[0].decode("UTF-8")
-            print "----------------------------------------------------------------------------------------------"
-            print "Find one: ", json.dumps(filename, encoding="UTF-8", ensure_ascii=False)
-            print "----------------------------------------------------------------------------------------------"
+            print("----------------------------------------------------------------------------------------------")
+            print("Find one: ", json.dumps(filename, encoding="UTF-8", ensure_ascii=False))
+            print("----------------------------------------------------------------------------------------------")
 
             if not os.path.exists("../WBDatabase/"):
                 os.mkdir("../WBDatabase/")
@@ -48,7 +48,7 @@ for date in dateList:
                 try:
                     thisdata = json.loads(content)
                 except Exception:
-                    print "no data here!"
+                    print("no data here!")
                 #### creat_at
                 try:
                     thisRequesttime = thisdata['cardlistInfo']['starttime']
@@ -72,7 +72,7 @@ for date in dateList:
                         itemTextPretty = ""
                         for string in soup.stripped_strings:
                             itemTextPretty += string
-                        print "Text: ", itemTextPretty
+                        print("Text: ", itemTextPretty)
 
                         itemTextPretty = removepeople(itemTextPretty)
                         itemTextPretty = removeurl(itemTextPretty)
@@ -92,9 +92,9 @@ for date in dateList:
                         with open(outputFile,"a") as output:
                             output.write(dataLine)
                             wbCount += 1
-                except Exception,e:
-                    print e
-                    print "No data in this file! Next!"
+                except Exception as e:
+                    print(e)
+                    print("No data in this file! Next!")
                     time.sleep(3)
                     continue
                 # thisendtime = thisdata['cards'][0]['card_group'][-1]['mblog']['created_at']
@@ -105,5 +105,5 @@ for date in dateList:
 
 endTime = datetime.datetime.now()
 
-print "Use Time: ", endTime - startTime
-print "Process total WB: ", wbCount
+print("Use Time: ", endTime - startTime)
+print("Process total WB: ", wbCount)

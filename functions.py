@@ -1,6 +1,6 @@
 #coding=utf-8
 import datetime
-from urllib import quote
+from urllib.parse import quote
 from datetime import datetime
 from datetime import timedelta
 import json
@@ -28,7 +28,7 @@ def days_ago(n):
     yest = datetime.now() - timedelta(days=n)
     date = str(yest).split(" ")[0]
     day = date[5:]
-    print day
+    print(day)
     return day
 
 
@@ -65,7 +65,7 @@ def get_this_endtime_text(content):
     this_data =json.loads(content)
     try:
         this_endtime_text = this_data['data']['cards'][0]['card_group'][-1]['mblog']['created_at']
-    except Exception,e:
+    except Exception as e:
         raise
     return this_endtime_text
 
