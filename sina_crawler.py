@@ -1,10 +1,13 @@
 import requests
 import re
+import os
+
  # Construct Search Content
 # f = open("./data/nba.txt", "w+")
-for i in range(1,200):
+for i in range(1,50000):
+    print(f"Processing page {i}")
     data = {
-         'containerid': '100103type=1&q=#nba',
+        'containerid': '100103type%3D1%26q%3D%23环法自行车赛%23',
         'page_type':'searchall',
         'page':i,
     }
@@ -20,8 +23,11 @@ for i in range(1,200):
     if html.content:
         response = html.json()
         cards = response["data"]["cards"]
-        with open("./data/nba.txt", "w", encoding="utf-8") as f:
-            f.write(str(cards))
+        try:
+            with open(f"{os.path.dirname(os.path.realpath(__file__))}/data/tdf_{i}.txt", "w", encoding="utf-8") as f:
+                f.write(str(cards))
+        except Exception as e:
+            print(e)
         # print(cards)
         result = []
          # Traversing a list of Cards
