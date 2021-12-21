@@ -12,6 +12,8 @@ def crawl_weibo(keyword: str, start_date: datetime, end_data: datetime, file_nam
     cur_page = 0
     data_retrieved = True
 
+    init_directories()
+
     while data_retrieved:
         cur_page += 1
 
@@ -38,6 +40,12 @@ def crawl_weibo(keyword: str, start_date: datetime, end_data: datetime, file_nam
                     print(e)
             else:
                 data_retrieved = False
+
+def init_directories():
+    db_path = f"{os.path.dirname(os.path.realpath(__file__))}/data/"
+
+    if not os.path.exists(db_path):
+        os.mkdir(db_path)
 
 def format_keyword_for_url(keyword: str) -> str:
     return keyword.replace("#", "%23")
