@@ -14,6 +14,9 @@ def crawl_weibo(keyword: str, start_date: datetime, end_data: datetime, file_nam
 
     init_directories()
 
+    card_counter = 0
+    print(f"Currently crawling {keyword}.")
+
     while data_retrieved:
         cur_page += 1
 
@@ -34,12 +37,14 @@ def crawl_weibo(keyword: str, start_date: datetime, end_data: datetime, file_nam
                     for card in unpack_nested_cards(cards, data["containerid"], cur_page):
                         creation_time = parse_creation_time_of_card(card["mblog"]["created_at"])
                         if creation_time >= start_date and creation_time <= end_data:
+                            card_counter += 1
                             with open(f"{os.path.dirname(os.path.realpath(__file__))}/data/{file_name}.txt", "a", encoding="utf-8") as file:
                                 file.write(str(card))
                 except Exception as e:
                     print(e)
             else:
                 data_retrieved = False
+                print(f"Found {card_counter} relevant cards.")
 
 def init_directories():
     db_path = f"{os.path.dirname(os.path.realpath(__file__))}/data/"
