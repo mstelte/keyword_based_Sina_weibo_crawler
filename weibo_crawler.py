@@ -11,11 +11,11 @@ def crawl_weibo(keyword: str, start_date: datetime, end_data: datetime, file_nam
     
     cur_page = 0
     data_retrieved = True
+    json_list = []
 
     init_directories()
 
-    card_counter = 0
-    print(f"Currently crawling {keyword}.")
+    print(f"Currently crawling {keyword}...")
 
     while data_retrieved:
         cur_page += 1
@@ -35,16 +35,19 @@ def crawl_weibo(keyword: str, start_date: datetime, end_data: datetime, file_nam
             if str(cards) != "[]":
                 try:
                     for card in unpack_nested_cards(cards, data["containerid"], cur_page):
-                        creation_time = parse_creation_time_of_card(card["mblog"]["created_at"])
+                        json_card = json.loads(json.dumps(card))
+                        creation_time = parse_creation_time_of_card(json_card.get("mblog").get("created_at"))
                         if creation_time >= start_date and creation_time <= end_data:
-                            card_counter += 1
-                            with open(f"{os.path.dirname(os.path.realpath(__file__))}/data/{file_name}.txt", "a", encoding="utf-8") as file:
-                                file.write(str(card))
+                            json_list.append(json_card)
                 except Exception as e:
                     print(e)
             else:
                 data_retrieved = False
-                print(f"Found {card_counter} relevant cards.")
+        
+    with open(f"{os.path.dirname(os.path.realpath(__file__))}/data/{file_name}.json", "w", encoding="utf-8") as file:
+        json.dump(json_list, file, ensure_ascii=False, indent=4)
+    file.close()
+    print(f"Found {len(json_list)} relevant cards.")
 
 def init_directories():
     db_path = f"{os.path.dirname(os.path.realpath(__file__))}/data/"
@@ -68,28 +71,29 @@ def unpack_nested_cards(retrieved_cards: any, container_id: str, cur_page: int) 
         json_card = json.loads(json.dumps(retrieved_card))
 
         if json_card.get("mblog"):
-            card_id = retrieved_card["mblog"]["id"]
+            card_id = json_card.get("mblog").get("id")
             if card_id not in card_ids:
-                cards.append(retrieved_card)
+                cards.append(json_card)
                 card_ids.add(card_id)
 
         if json_card.get("card_group"):
             for card in unpack_nested_cards(retrieved_card["card_group"], container_id, cur_page):
-                card_id = card["mblog"]["id"]
+                json_card = json.loads(json.dumps(card))
+                card_id = json_card.get("mblog").get("id")
                 if card_id not in card_ids:
-                    cards.append(card)
+                    cards.append(json_card)
                     card_ids.add(card_id)
 
         if json_card.get("left_element"):
-            card_id = retrieved_card["left_element"]["mblog"]["id"]
+            card_id = json_card.get("left_element").get("mblog").get("id")
             if card_id not in card_ids:
-                cards.append(retrieved_card["left_element"])
+                cards.append(json_card.get("left_element"))
                 card_ids.add(card_id)
 
         if json_card.get("right_element"):
-            card_id = retrieved_card["right_element"]["mblog"]["id"]
+            card_id = json_card.get("right_element").get("mblog").get("id")
             if card_id not in card_ids:
-                cards.append(retrieved_card["right_element"])
+                cards.append(json_card.get("right_element"))
                 card_ids.add(card_id)
                 
         if retrieved_card["card_type"] not in types:
